@@ -3,7 +3,7 @@ const UserRepository = require('../repositories/UserRepository');
 const AnimeRepository = require('../repositories/AnimeRepository');
 const CharacterRepository = require('../repositories/CharacterRepository');
 const jikanClient = require('../integrations/JikanClient');
-const { User, Anime, Character } = require('../models');
+const { Anime } = require('../models');
 
 class OnboardingService {
   /**

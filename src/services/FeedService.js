@@ -95,7 +95,7 @@ class FeedService {
     const post = await PostRepository.findById(postId);
     if (!post) throw new AppError('Post não encontrado', 404);
 
-    const comment = await CommentRepository.create({
+    await CommentRepository.create({
       post_id: postId,
       user_id: userId,
       texto,

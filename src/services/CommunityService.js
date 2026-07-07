@@ -5,7 +5,7 @@ const CharacterVoteRepository = require('../repositories/CharacterVoteRepository
 const UserAnimeTrackingRepository = require('../repositories/UserAnimeTrackingRepository');
 const OnboardingService = require('./OnboardingService');
 const jikanClient = require('../integrations/JikanClient');
-const { Anime, Character, User, UserAnimeTracking } = require('../models');
+const { Character, User } = require('../models');
 
 class CommunityService {
   /**

@@ -32,10 +32,13 @@ if (process.env.DATABASE_URL) {
   sequelize = new Sequelize(process.env.DATABASE_URL, dbConfig);
 } else {
   // Fallback: parâmetros individuais (desenvolvimento local)
+  if (!process.env.DB_PASSWORD) {
+    console.warn('⚠ DB_PASSWORD não definido. Configure um .env file.');
+  }
   sequelize = new Sequelize(
     process.env.DB_NAME || 'omakebox',
     process.env.DB_USER || 'postgres',
-    process.env.DB_PASSWORD || 'postgres',
+    process.env.DB_PASSWORD || '',
     {
       ...dbConfig,
       host: process.env.DB_HOST || 'localhost',

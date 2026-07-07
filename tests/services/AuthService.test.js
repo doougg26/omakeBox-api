@@ -107,11 +107,13 @@ describe('AuthService', () => {
 
   describe('refreshToken', () => {
     it('deve renovar tokens com refresh token válido', async () => {
+      const env = require('../../src/config/environment');
+
       UserRepository.findById.mockResolvedValue(mockUser);
 
       const refreshToken = jwt.sign(
         { sub: mockUser.id },
-        process.env.JWT_REFRESH_SECRET || 'test-refresh-secret-key',
+        env.jwt.refreshSecret,
         { expiresIn: '7d' }
       );
 

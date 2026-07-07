@@ -2,6 +2,7 @@ require('./src/config/environment');
 
 const path = require('path');
 const express = require('express');
+const helmet = require('helmet');
 const cors = require('cors');
 const sequelize = require('./src/config/database');
 const { runMigrations } = require('./src/config/migrator');
@@ -10,6 +11,19 @@ const errorHandler = require('./src/middlewares/errorHandler');
 const env = require('./src/config/environment');
 
 const app = express();
+
+// Segurança: headers HTTP
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: ["'self'", 'data:', 'https://*.jikan.moe', 'https://cdn.myanimelist.net'],
+      connectSrc: ["'self'", env.cors.frontendUrl, 'https://libretranslate.com'],
+      frameAncestors: ["'none'"],
+    },
+  },
+}));
 
 // Middlewares globais
 app.use(cors({

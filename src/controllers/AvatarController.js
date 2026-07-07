@@ -18,7 +18,7 @@ class AvatarController {
     try {
       const { avatar_url } = req.body;
 
-      if (!avatar_url) {
+      if (!avatar_url || typeof avatar_url !== 'string') {
         throw new AppError('URL do avatar é obrigatória', 400);
       }
 

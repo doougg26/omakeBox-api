@@ -1,5 +1,4 @@
 const https = require('https');
-const http = require('http');
 
 const LIBRE_TRANSLATE_URL = 'https://libretranslate.com/translate';
 
@@ -20,11 +19,7 @@ class TranslateService {
     });
 
     return new Promise((resolve, reject) => {
-      const url = new URL(LIBRE_TRANSLATE_URL);
-      const client = url.protocol === 'https:' ? https : http;
-
-      const req = client.request(
-        url,
+      const req = https.request(LIBRE_TRANSLATE_URL,
         {
           method: 'POST',
           headers: {

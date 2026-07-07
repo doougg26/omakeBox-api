@@ -13,4 +13,5 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov'],
   setupFiles: ['<rootDir>/tests/setup.js'],
+  transformIgnorePatterns: ['/node_modules/(?!(uuid)/)'],
 };
