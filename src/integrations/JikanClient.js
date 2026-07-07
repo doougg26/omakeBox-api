@@ -6,33 +6,69 @@ class JikanClient {
   constructor() {
     this.cache = new Map();
     this.CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+    this._staleWarned = new Set(); // evita repetir warnings do mesmo endpoint
   }
 
   _getCacheKey(endpoint) {
     return `${JIKAN_BASE}${endpoint}`;
   }
 
+  /** Retorna dados frescos (dentro do TTL) */
   _getFromCache(key) {
     const cached = this.cache.get(key);
     if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
-      return cached.data;
+      return cached;
     }
-    this.cache.delete(key);
     return null;
+  }
+
+  /** Retorna qualquer dado em cache, mesmo expirado (stale) */
+  _getStaleFromCache(key) {
+    const cached = this.cache.get(key);
+    return cached || null;
   }
 
   _setCache(key, data) {
     this.cache.set(key, { data, timestamp: Date.now() });
   }
 
-  _fetch(endpoint) {
+  /**
+   * Fetch com stale-while-revalidate:
+   * - Cache fresco → devolve imediatamente
+   * - API falha + cache expirado → devolve cache (stale)
+   * - API falha + sem cache → reject
+   */
+  async _fetch(endpoint) {
+    const cacheKey = this._getCacheKey(endpoint);
+    const fresh = this._getFromCache(cacheKey);
+    if (fresh) {
+      return fresh.data;
+    }
+
+    // Tenta buscar da API
+    try {
+      const data = await this._fetchFromApi(endpoint);
+      this._setCache(cacheKey, data);
+      return data;
+    } catch (apiErr) {
+      // API falhou — tenta cache expirado como fallback
+      const stale = this._getStaleFromCache(cacheKey);
+      if (stale) {
+        if (!this._staleWarned.has(cacheKey)) {
+          this._staleWarned.add(cacheKey);
+          console.warn(`[Jikan] API indisponível, usando cache expirado para: ${endpoint}`);
+        }
+        const staleData = { ...stale.data, _stale: true };
+        return staleData;
+      }
+      throw apiErr;
+    }
+  }
+
+  /** Requisição HTTP real à Jikan API */
+  _fetchFromApi(endpoint) {
     return new Promise((resolve, reject) => {
       const url = `${JIKAN_BASE}${endpoint}`;
-
-      const cached = this._getFromCache(this._getCacheKey(endpoint));
-      if (cached) {
-        return resolve(cached);
-      }
 
       https
         .get(url, { headers: { 'User-Agent': 'OmakeBox/1.0' } }, (res) => {
@@ -42,14 +78,12 @@ class JikanClient {
             try {
               const parsed = JSON.parse(data);
 
-              // Verifica se a Jikan API retornou erro (status code não-2xx)
               if (parsed.status && parsed.status >= 400) {
                 const msg = parsed.message || `Jikan API retornou status ${parsed.status}`;
                 reject(new Error(msg));
                 return;
               }
 
-              this._setCache(this._getCacheKey(endpoint), parsed);
               resolve(parsed);
             } catch (err) {
               reject(new Error('Falha ao processar resposta da Jikan API'));
@@ -84,6 +118,10 @@ class JikanClient {
 
   async getAnimeCharacters(malId) {
     return this._fetch(`/anime/${malId}/characters`);
+  }
+
+  async getAnimeByGenre(genreId, page = 1) {
+    return this._fetch(`/anime?genres=${genreId}&page=${page}&limit=25&order_by=popularity&sort=asc`);
   }
 
   _getCurrentSeason() {

@@ -6,6 +6,7 @@ const router = Router();
 router.get('/trending', animeController.getTrending);
 router.get('/search', animeController.search);
 router.get('/season', animeController.getSeason);
+router.get('/by-genre', animeController.getByGenre);
 
 // GET /anime/:id agora é tratado pelas communityRoutes com dados enriquecidos
 

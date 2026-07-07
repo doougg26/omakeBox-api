@@ -47,6 +47,19 @@ class AnimeController {
       next(err);
     }
   }
+
+  async getByGenre(req, res, next) {
+    try {
+      const { genre, page } = req.query;
+      if (!genre) {
+        return res.status(400).json({ error: 'Parâmetro genre é obrigatório' });
+      }
+      const results = await jikanClient.getAnimeByGenre(parseInt(genre, 10), parseInt(page, 10) || 1);
+      res.json(results);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = new AnimeController();
