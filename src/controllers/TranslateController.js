@@ -5,8 +5,12 @@ class TranslateController {
     try {
       const { text, target, source } = req.body;
 
-      if (!text) {
+      if (!text || typeof text !== 'string') {
         return res.status(400).json({ error: 'Texto é obrigatório' });
+      }
+
+      if (text.length > 2000) {
+        return res.status(400).json({ error: 'Texto muito longo (máx. 2000 caracteres)' });
       }
 
       const translated = await translateService.translate(
