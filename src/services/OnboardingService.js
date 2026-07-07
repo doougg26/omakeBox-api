@@ -77,9 +77,9 @@ class OnboardingService {
   async setFavoriteAnime(userId, malId) {
     const anime = await this.syncAnimeFromJikan(malId);
 
+    // Não reseta mais avatar ao mudar anime favorito
     await UserRepository.updateProfile(userId, {
       anime_favorito_id: anime.id,
-      avatar_personagem_id: null, // Reset avatar quando muda o anime
     });
 
     // Sincroniza personagens em background
@@ -90,7 +90,6 @@ class OnboardingService {
     const user = await UserRepository.findById(userId, {
       include: [
         { model: Anime, as: 'animeFavorito', attributes: ['id', 'titulo', 'capa_url', 'mal_id'] },
-        { model: Character, as: 'avatarPersonagem', attributes: ['id', 'nome', 'imagem_url'] },
       ],
     });
 
@@ -105,89 +104,8 @@ class OnboardingService {
         id: user.id,
         nickname: user.nickname,
         anime_favorito_id: user.anime_favorito_id,
-        avatar_personagem_id: user.avatar_personagem_id,
       },
     };
-  }
-
-  /**
-   * Define o avatar do usuário (personagem do anime favorito)
-   */
-  async setAvatar(userId, characterMalId) {
-    const user = await UserRepository.findById(userId);
-    if (!user) throw new AppError('Usuário não encontrado', 404);
-
-    if (!user.anime_favorito_id) {
-      throw new AppError('Defina um anime favorito antes de escolher o avatar', 400);
-    }
-
-    // Verifica se o personagem existe no cache local
-    let character = await CharacterRepository.findByMalId(characterMalId);
-
-    // Se não existir, busca da Jikan e cria
-    if (!character) {
-      const animeResponse = await jikanClient.getAnimeCharacters(
-        (await AnimeRepository.findById(user.anime_favorito_id)).mal_id
-      );
-      const charData = animeResponse.data?.find(
-        (c) => c.character?.mal_id === characterMalId
-      );
-      if (!charData) {
-        throw new AppError('Personagem não encontrado para este anime', 404);
-      }
-      const c = charData.character;
-      character = await CharacterRepository.create({
-        mal_id: c.mal_id,
-        nome: c.name,
-        imagem_url: c.images?.jpg?.image_url,
-        anime_id: user.anime_favorito_id,
-      });
-    }
-
-    // Verifica se o personagem pertence ao anime favorito
-    if (character.anime_id !== user.anime_favorito_id) {
-      throw new AppError('Personagem não pertence ao seu anime favorito', 400);
-    }
-
-    await UserRepository.updateProfile(userId, {
-      avatar_personagem_id: character.id,
-    });
-
-    return {
-      id: character.id,
-      nome: character.nome,
-      imagem_url: character.imagem_url,
-    };
-  }
-
-  /**
-   * Retorna os personagens do anime favorito para escolha de avatar
-   */
-  async getAvatarOptions(userId) {
-    const user = await UserRepository.findById(userId);
-    if (!user) throw new AppError('Usuário não encontrado', 404);
-
-    if (!user.anime_favorito_id) {
-      throw new AppError('Defina um anime favorito primeiro', 400);
-    }
-
-    const anime = await AnimeRepository.findById(user.anime_favorito_id);
-    if (!anime) throw new AppError('Anime favorito não encontrado', 404);
-
-    // Tenta buscar do cache local primeiro
-    let characters = await CharacterRepository.findByAnimeId(anime.id);
-
-    // Se não tiver personagens cacheados, busca da Jikan
-    if (characters.length === 0) {
-      characters = await this.syncCharactersFromJikan(anime.id, anime.mal_id);
-    }
-
-    return characters.map((c) => ({
-      id: c.id,
-      mal_id: c.mal_id,
-      nome: c.nome,
-      imagem_url: c.imagem_url,
-    }));
   }
 
   _normalizeStatus(status) {

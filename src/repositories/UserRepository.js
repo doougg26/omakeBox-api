@@ -14,6 +14,10 @@ class UserRepository extends BaseRepository {
     return this.findOne({ where: { nickname } });
   }
 
+  async findById(id, options = {}) {
+    return this.model.findByPk(id, options);
+  }
+
   async findByNicknameOrEmail(identifier) {
     return this.findOne({
       where: {

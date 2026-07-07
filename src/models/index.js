@@ -16,8 +16,6 @@ User.hasMany(Comment, { foreignKey: 'user_id' });
 User.hasMany(CharacterVote, { foreignKey: 'user_id' });
 User.hasMany(Notification, { foreignKey: 'user_id' });
 User.belongsTo(Anime, { as: 'animeFavorito', foreignKey: 'anime_favorito_id' });
-User.belongsTo(Character, { as: 'avatarPersonagem', foreignKey: 'avatar_personagem_id' });
-
 // Anime associations
 Anime.hasMany(Character, { foreignKey: 'anime_id' });
 Anime.hasMany(UserAnimeTracking, { foreignKey: 'anime_id' });
@@ -28,8 +26,6 @@ Anime.hasOne(User, { as: 'animeFavorito', foreignKey: 'anime_favorito_id' });
 // Character associations
 Character.belongsTo(Anime, { foreignKey: 'anime_id' });
 Character.hasMany(CharacterVote, { foreignKey: 'character_id' });
-Character.hasOne(User, { as: 'avatarPersonagem', foreignKey: 'avatar_personagem_id' });
-
 // UserAnimeTracking associations
 UserAnimeTracking.belongsTo(User, { foreignKey: 'user_id' });
 UserAnimeTracking.belongsTo(Anime, { foreignKey: 'anime_id' });

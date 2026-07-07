@@ -11,24 +11,6 @@ class OnboardingController {
     }
   }
 
-  async setAvatar(req, res, next) {
-    try {
-      const { characterMalId } = req.body;
-      const result = await onboardingService.setAvatar(req.userId, characterMalId);
-      res.json(result);
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async getAvatarOptions(req, res, next) {
-    try {
-      const options = await onboardingService.getAvatarOptions(req.userId);
-      res.json(options);
-    } catch (err) {
-      next(err);
-    }
-  }
 }
 
 module.exports = new OnboardingController();

@@ -43,6 +43,16 @@ Notification.init(
     tableName: 'notifications',
     timestamps: false,
     underscored: true,
+    indexes: [
+      {
+        name: 'notifications_user_id_criado_em_idx',
+        fields: ['user_id', 'criado_em'],
+      },
+      {
+        name: 'notifications_user_id_lida_idx',
+        fields: ['user_id', 'lida'],
+      },
+    ],
   }
 );
 

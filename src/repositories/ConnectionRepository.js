@@ -1,6 +1,11 @@
 const BaseRepository = require('./BaseRepository');
 const { Connection, User } = require('../models');
+
 const { Op } = require('sequelize');
+
+const USER_WITH_AVATAR = {
+  attributes: ['id', 'nickname', 'avatar_url'],
+};
 
 class ConnectionRepository extends BaseRepository {
   constructor() {
@@ -11,7 +16,7 @@ class ConnectionRepository extends BaseRepository {
     return this.findAll({
       where: { destinatario_id: userId, status: 'pendente' },
       include: [
-        { model: User, as: 'Solicitante', attributes: ['id', 'nickname'] },
+        { model: User, as: 'Solicitante', ...USER_WITH_AVATAR },
       ],
       order: [['criado_em', 'DESC']],
     });
@@ -27,8 +32,8 @@ class ConnectionRepository extends BaseRepository {
         status: 'aceita',
       },
       include: [
-        { model: User, as: 'Solicitante', attributes: ['id', 'nickname'] },
-        { model: User, as: 'Destinatario', attributes: ['id', 'nickname'] },
+        { model: User, as: 'Solicitante', ...USER_WITH_AVATAR },
+        { model: User, as: 'Destinatario', ...USER_WITH_AVATAR },
       ],
       order: [['criado_em', 'DESC']],
     });
@@ -63,6 +68,7 @@ class ConnectionRepository extends BaseRepository {
         user: {
           id: friend.id,
           nickname: friend.nickname,
+          avatar: friend.avatar_url ? { tipo: 'custom', imagem_url: friend.avatar_url } : null,
         },
         criado_em: c.criado_em,
       };

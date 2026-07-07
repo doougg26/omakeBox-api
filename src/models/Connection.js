@@ -41,6 +41,14 @@ Connection.init(
         unique: true,
         fields: ['solicitante_id', 'destinatario_id'],
       },
+      {
+        name: 'connections_destinatario_status_idx',
+        fields: ['destinatario_id', 'status', 'criado_em'],
+      },
+      {
+        name: 'connections_solicitante_status_idx',
+        fields: ['solicitante_id', 'status', 'criado_em'],
+      },
     ],
   }
 );

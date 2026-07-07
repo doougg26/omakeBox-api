@@ -1,6 +1,11 @@
 const BaseRepository = require('./BaseRepository');
 const { Comment, User } = require('../models');
 
+const USER_WITH_AVATAR = {
+  model: User,
+  attributes: ['id', 'nickname', 'avatar_url'],
+};
+
 class CommentRepository extends BaseRepository {
   constructor() {
     super(Comment);
@@ -9,9 +14,7 @@ class CommentRepository extends BaseRepository {
   async findByPost(postId) {
     return this.findAll({
       where: { post_id: postId },
-      include: [
-        { model: User, attributes: ['id', 'nickname'] },
-      ],
+      include: [USER_WITH_AVATAR],
       order: [['criado_em', 'ASC']],
     });
   }

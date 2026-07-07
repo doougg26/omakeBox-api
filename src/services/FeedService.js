@@ -147,6 +147,11 @@ class FeedService {
     return this.getUserPosts(user.id, page, limit);
   }
 
+  _serializeUser(user) {
+    if (!user) return null;
+    return { id: user.id, nickname: user.nickname, avatar: user.avatar_url ? { tipo: 'custom', imagem_url: user.avatar_url } : null };
+  }
+
   _serializePost(post, commentCount = 0) {
     return {
       id: post.id,
@@ -154,9 +159,7 @@ class FeedService {
       marcado_como_spoiler: post.marcado_como_spoiler,
       likes_count: post.likes_count,
       criado_em: post.criado_em,
-      user: post.User
-        ? { id: post.User.id, nickname: post.User.nickname }
-        : null,
+      user: this._serializeUser(post.User),
       anime: post.Anime
         ? {
             id: post.Anime.id,
@@ -171,9 +174,7 @@ class FeedService {
             id: c.id,
             texto: c.texto,
             criado_em: c.criado_em,
-            user: c.User
-              ? { id: c.User.id, nickname: c.User.nickname }
-              : null,
+            user: this._serializeUser(c.User),
           }))
         : [],
     };

@@ -35,6 +35,16 @@ Comment.init(
     tableName: 'comments',
     timestamps: false,
     underscored: true,
+    indexes: [
+      {
+        name: 'comments_post_id_criado_em_idx',
+        fields: ['post_id', 'criado_em'],
+      },
+      {
+        name: 'comments_user_id_idx',
+        fields: ['user_id'],
+      },
+    ],
   }
 );
 

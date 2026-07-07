@@ -29,10 +29,9 @@ User.init(
       allowNull: true,
       references: { model: 'animes', key: 'id' },
     },
-    avatar_personagem_id: {
-      type: DataTypes.UUID,
+    avatar_url: {
+      type: DataTypes.TEXT,
       allowNull: true,
-      references: { model: 'characters', key: 'id' },
     },
     bio: {
       type: DataTypes.TEXT,

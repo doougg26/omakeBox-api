@@ -45,6 +45,20 @@ Post.init(
     tableName: 'posts',
     timestamps: false,
     underscored: true,
+    indexes: [
+      {
+        name: 'posts_criado_em_idx',
+        fields: ['criado_em'],
+      },
+      {
+        name: 'posts_user_id_criado_em_idx',
+        fields: ['user_id', 'criado_em'],
+      },
+      {
+        name: 'posts_anime_id_idx',
+        fields: ['anime_id'],
+      },
+    ],
   }
 );
 

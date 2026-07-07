@@ -41,6 +41,14 @@ class JikanClient {
           res.on('end', () => {
             try {
               const parsed = JSON.parse(data);
+
+              // Verifica se a Jikan API retornou erro (status code não-2xx)
+              if (parsed.status && parsed.status >= 400) {
+                const msg = parsed.message || `Jikan API retornou status ${parsed.status}`;
+                reject(new Error(msg));
+                return;
+              }
+
               this._setCache(this._getCacheKey(endpoint), parsed);
               resolve(parsed);
             } catch (err) {

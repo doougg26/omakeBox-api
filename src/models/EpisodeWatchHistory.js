@@ -37,7 +37,12 @@ EpisodeWatchHistory.init(
     underscored: true,
     indexes: [
       {
+        name: 'ewh_user_anime_criado_idx',
         fields: ['user_id', 'anime_id', 'criado_em'],
+      },
+      {
+        name: 'ewh_user_anime_ep_idx',
+        fields: ['user_id', 'anime_id', 'episode_number'],
       },
     ],
   }

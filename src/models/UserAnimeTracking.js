@@ -58,6 +58,22 @@ UserAnimeTracking.init(
         unique: true,
         fields: ['user_id', 'anime_id'],
       },
+      {
+        name: 'uat_user_id_atualizado_em_idx',
+        fields: ['user_id', 'atualizado_em'],
+      },
+      {
+        name: 'uat_anime_id_idx',
+        fields: ['anime_id'],
+      },
+      {
+        name: 'uat_anime_id_status_idx',
+        fields: ['anime_id', 'status'],
+      },
+      {
+        name: 'uat_anime_id_nota_idx',
+        fields: ['anime_id', 'nota'],
+      },
     ],
   }
 );
