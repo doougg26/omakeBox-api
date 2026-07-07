@@ -20,6 +20,13 @@ class AnimeController {
       const results = await jikanClient.searchAnime(q, parseInt(page, 10) || 1);
       res.json(results);
     } catch (err) {
+      // Se for erro da Jikan API, retorna mensagem amigável
+      if (err.message && err.message.includes('Jikan')) {
+        return res.status(503).json({
+          error: 'Serviço de busca temporariamente indisponível',
+          detail: 'A fonte de dados (MyAnimeList) está inacessível no momento. Tente novamente mais tarde.',
+        });
+      }
       next(err);
     }
   }
