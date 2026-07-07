@@ -52,7 +52,20 @@ async function start() {
       console.log(`  Ambiente: ${env.nodeEnv}`);
     });
   } catch (err) {
-    console.error('✗ Erro ao iniciar servidor:', err.message);
+    console.error('✗ Erro ao iniciar servidor:');
+    console.error('  Mensagem:', err.message || '(sem mensagem)');
+    console.error('  Stack:', err.stack);
+    console.error('  Nome:', err.name);
+    if (err.original) {
+      console.error('  Original:', err.original.message);
+      console.error('  Original stack:', err.original.stack);
+    }
+    // Loga todas as propriedades do erro para debug
+    try {
+      console.error('  Detalhes completos:', JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+    } catch (_) {
+      console.error('  Detalhes completos: (não serializável — objeto com referência circular)');
+    }
     process.exit(1);
   }
 }
