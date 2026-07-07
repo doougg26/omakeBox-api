@@ -9,6 +9,7 @@ const translateRoutes = require('./translateRoutes');
 const feedRoutes = require('./feedRoutes');
 const connectionRoutes = require('./connectionRoutes');
 const notificationRoutes = require('./notificationRoutes');
+const statsRoutes = require('./statsRoutes');
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use('/tracking', trackingRoutes);
 router.use('/feed', feedRoutes);
 router.use('/connections', connectionRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/stats', statsRoutes);
 router.use('/', translateRoutes);
 
 // Health check
